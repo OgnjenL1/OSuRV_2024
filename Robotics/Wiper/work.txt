@@ -1,0 +1,25 @@
+- Joy C code.
+
+- github
+- fork OSuRV_2024
+- git clone
+- mv work.txt
+- add from lab5 SW/Driver
+	- gpio.c .h
+	- main.c
+	- gpio_ctrl
+- git add *
+- git commit -a -m "Poruka"
+- git push
+
+
+- /dev/gpio_stream
+	- u8: gpio num
+	- u8: cmd R/W
+		- za pocetak samo write
+- test_gpio 10 w 1
+- test_gpio 10 w 0
+- test_gpio 11 r
+
+- Wiper connection and testing
+- Integration with joystick
