@@ -1,8 +1,10 @@
 
-DEV_NAME := motor_ctrl
-DEV_MAJOR := 260
+DRV_NAME := gpio_ctrl
 
-TARGET := $(DEV_NAME).ko
+DEV_STREAM_MAJOR := 261
+DEV_STREAM_NAME := gpio_stream
+
+TARGET := $(DRV_NAME).ko
 
 MDIR := drivers/pwm
 
@@ -12,8 +14,8 @@ PWD := $(shell pwd)
 DEST := /lib/modules/$(CURRENT)/kernel/$(MDIR)
 EXTRA_CFLAGS := -I$(PWD) -DDEV_MAJOR=$(DEV_MAJOR)
 
-obj-m := motor_ctrl.o
-motor_ctrl-objs := gpio.o hw_pwm.o sw_pwm.o pwm.o servo_fb.o bldc.o main.o
+obj-m := gpio_ctrl.o
+gpio_ctrl-objs := gpio.o main.o
 
 .PHONY: default
 default: build
@@ -28,24 +30,24 @@ build: stop check_is_major_free
 
 .PHONY: check_is_major_free
 check_is_major_free:
-	if [ `cat /proc/devices | grep -c $(DEV_MAJOR)` != 0 ]; \
+	if [ `cat /proc/devices | grep -c $(DEV_STREAM_MAJOR)` != 0 ]; \
 	then \
-		echo "Major $(DEV_MAJOR) is occupied!"; \
+		echo "Major $(DEV_STREAM_MAJOR) is occupied!"; \
 		exit 1; \
 	fi
 
 
-DEV_FN := /dev/$(DEV_NAME)
+DEV_STREAM_FN := /dev/$(DEV_STREAM_NAME)
 .PHONY: start
 start:
 	sudo insmod $(TARGET)
-	sudo rm -f $(DEV_FN)
-	sudo mknod $(DEV_FN) c $(DEV_MAJOR) 0
-	sudo chmod a+rw $(DEV_FN)
+	sudo rm -f $(DEV_STREAM_FN)
+	sudo mknod $(DEV_STREAM_FN) c $(DEV_STREAM_MAJOR) 0
+	sudo chmod a+rw $(DEV_STREAM_FN)
 	
 .PHONY: stop
 stop:
-	if [ `lsmod | grep -c $(DEV_NAME)` != 0 ]; \
+	if [ `lsmod | grep -c $(DRV_NAME)` != 0 ]; \
 	then \
 		sudo rmmod $(TARGET:%.ko=%); \
 	fi

@@ -5,7 +5,7 @@
 #include <asm/io.h> // ioremap(), iounmap()
 #include <linux/errno.h> // ENOMEM
 
-#define DEV_NAME "gpio_ctrl"
+#define DRV_NAME "gpio_ctrl"
 
 /*
 NOTE: Check Broadcom BCM8325 datasheet, page 91+
@@ -17,7 +17,7 @@ NOTE: Check Broadcom BCM8325 datasheet, page 91+
 	total system ram is 0x3F000000 (1GB - 16MB)
 	instead of 0x20000000 (512 MB)
 */
-#define GPIO_BASE            (BCM2708_PERI_BASE + 0x200000)                                                             //PWM BAZA
+#define GPIO_BASE            (BCM2708_PERI_BASE + 0x200000)
 #define GPIO_ADDR_SPACE_LEN  (0xB4)
 
 // Virtual address where the physical GPIO address is mapped.
@@ -34,7 +34,7 @@ int gpio__init(void) {
 
 exit:
 	if(r){
-		printk(KERN_ERR DEV_NAME": %s() failed with %d!\n", __func__, r);
+		printk(KERN_ERR DRV_NAME": %s() failed with %d!\n", __func__, r);
 		gpio__exit();
 	}
 	return r;
@@ -53,7 +53,7 @@ void gpio__exit(void) {
 #define check_pin(pin) \
 	(pin < 2 || 26 < pin) ? ( \
 			printk( \
-				KERN_WARNING DEV_NAME": %s(): %d out of range [2, 26]!\n", \
+				KERN_WARNING DRV_NAME": %s(): %d out of range [2, 26]!\n", \
 				__func__, \
 				pin \
 			), 1 \
