@@ -40,6 +40,8 @@ static ssize_t gpio_stream_write(
 	for(i = 0; i < len; i++){
 		printk(KERN_INFO DRV_NAME": %s() buf[%d] = %d\n", __func__, i, (int)buf[i]);
 	}
+#else
+	(void)i;
 #endif
 
 	if(len != 3 && len != 2){
@@ -72,8 +74,7 @@ static ssize_t gpio_stream_write(
 
 		gpio__steer_pinmux(gpio_no, GPIO__IN);
 
-		//TODO rd_val gpio__read
-
+		rd_val = gpio__read(gpio_no);
 
 		printk(KERN_INFO DRV_NAME": %s() rd_val = %d\n", __func__, rd_val);
 	}else{

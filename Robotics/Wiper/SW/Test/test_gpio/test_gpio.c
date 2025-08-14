@@ -8,6 +8,7 @@
 
 #define DEV_STREAM_FN "/dev/gpio_stream"
 
+#define DEBUG 0
 
 void usage(FILE* f){
 	fprintf(f,
@@ -99,9 +100,11 @@ int main(int argc, char** argv){
 		return r;
 	}
 
+#if DEBUG
 	printf("gpio_no = %d\n", gpio_no);
 	printf("op = %c\n", op);
 	printf("wr_val = %d\n", wr_val);
+#endif
 
 
 	//TODO Check gpio_num, op and wr_val for correct values.
@@ -142,11 +145,27 @@ int main(int argc, char** argv){
 			return 4;
 		}
 	}else if(op == 'r'){
-		//TODO write gpio_no op
+		uint8_t pkg[2];
+        pkg[0] = gpio_no;
+		pkg[1] = 'r';
+
+		r = write(fd, pkg, sizeof(pkg));
+		if(r != sizeof(pkg)){
+			fprintf(stderr, "ERROR: write went wrong!\n");
+			return 4;
+		}
 
 		uint8_t rd_val;
-		// r = read(fd, (char*)&rd_val, sizeof(rd_val));
+		r = read(fd, (char*)&rd_val, sizeof(rd_val));
+        if(r != sizeof(rd_val)){
+			fprintf(stderr, "ERROR: read went wrong!\n");
+			return 5;
+		}
+#if DEBUG
+		printf("rd_val = %d\n", rd_val);
+#endif
 
+		printf("read %d from gpio%d\n", rd_val, gpio_no);
 	}
 
 	close(fd);
