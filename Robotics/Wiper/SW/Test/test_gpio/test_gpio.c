@@ -6,20 +6,20 @@
 #include <string.h> // strerror()
 #include <errno.h> // errno
 
-#include "gpio_ctrl.h"
 
 
 void usage(FILE* f){
 	fprintf(f,
 "\nUsage: "\
-"\n Za poziv programa upisati"
-"\n ./waf build && ./build/test_gpio gpio_no op wr_val"
-"\n gpio_no = broj pinova moze biti od 1 do 26"
-"\n op = read('r') ili write('w')"
-"\n wr_val = opciono (1 ili 0)\n"
-
-
-
+"\n	test_gpio -h|--help"\
+"\n		print this help i.e."\
+"\n	test_gpio <gpio_no> w <wr_wal>"\
+"\n		set GPIO to output and write it 0 or 1"\
+"\n	test_gpio <gpio_no> r"\
+"\n		set GPIO to input and read value"\
+"\n	gpio_no = [1, 42]"\
+"\n wr_val = 0 or 1"\
+"\n"\
 );
 
 }
