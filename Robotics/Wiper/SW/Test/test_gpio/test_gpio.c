@@ -6,6 +6,7 @@
 #include <string.h> // strerror()
 #include <errno.h> // errno
 
+#define DEV_STREAM_FN "/dev/gpio_stream"
 
 
 void usage(FILE* f){
@@ -17,7 +18,7 @@ void usage(FILE* f){
 "\n		set GPIO to output and write it 0 or 1"\
 "\n	test_gpio <gpio_no> r"\
 "\n		set GPIO to input and read value"\
-"\n	gpio_no = [1, 42]"\
+"\n	gpio_no = [2, 26]"\
 "\n wr_val = 0 or 1"\
 "\n"\
 );
@@ -127,23 +128,24 @@ int main(int argc, char** argv){
 	}
 
 
-	gpio_ctrl__stream_pkg_t pkg;
-	pkg.gpio_no = gpio_no;
-
-
 	if(op == 'w'){
-		pkg.op = 1;
-		pkg.wr_val = wr_val;
+		uint8_t pkg[3];
+		pkg[0] = gpio_no;
+		pkg[1] = 'w';
+		pkg[2] = wr_val;
 
-		printf("write %d to gpio%d\n", pkg.wr_val, pkg.gpio_no);
+		printf("write %d to gpio%d\n", wr_val, gpio_no);
 
-		r = write(fd, (char*)&pkg, sizeof(pkg));
+		r = write(fd, pkg, sizeof(pkg));
 		if(r != sizeof(pkg)){
 			fprintf(stderr, "ERROR: write went wrong!\n");
 			return 4;
 		}
 	}else if(op == 'r'){
-	//	r = read(fd, (char*)&duties, sizeof(duties));
+		//TODO write gpio_no op
+
+		uint8_t rd_val;
+		// r = read(fd, (char*)&rd_val, sizeof(rd_val));
 
 	}
 

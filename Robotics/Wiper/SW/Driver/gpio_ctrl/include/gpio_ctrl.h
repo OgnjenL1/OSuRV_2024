@@ -17,8 +17,8 @@
 
 
 typedef enum {
-	GPIO_CTRL__READ = 0,
-	GPIO_CTRL__WRITE = 1,
+	GPIO_CTRL__READ = 'r',
+	GPIO_CTRL__WRITE = 'w',
 } gpio_ctrl__gpio_cmd_t;
 
 typedef struct {

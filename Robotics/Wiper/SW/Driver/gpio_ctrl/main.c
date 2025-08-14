@@ -21,7 +21,6 @@ static int gpio_stream_release(struct inode *inode, struct file *filp) {
 	return 0;
 }
 
-gpio_ctrl__stream_pkg_t pkg;
 uint8_t rd_val = 0;
 
 static ssize_t gpio_stream_write(
@@ -31,30 +30,57 @@ static ssize_t gpio_stream_write(
 	loff_t *f_pos
 ) {
 	int i;
+	uint8_t pkg[3];
+	uint8_t gpio_no;
+	uint8_t op;
+	uint8_t wr_val;
 
+#if 0
 	printk(KERN_INFO DRV_NAME": %s() len = %d\n", __func__, len);
 	for(i = 0; i < len; i++){
 		printk(KERN_INFO DRV_NAME": %s() buf[%d] = %d\n", __func__, i, (int)buf[i]);
 	}
-/*
-	if(
-		copy_from_user(
-			(uint8_t*)&pkg,
-			buf,
-			len)
-			!= 0
-		) {
-		return -EFAULT;
-	}else{
+#endif
 
-		printk(KERN_INFO DRV_NAME": %s() pkg.gpio_num = %d\n", __func__, pkg.gpio_no);
-		printk(KERN_INFO DRV_NAME": %s() pkg.op = %d\n", __func__, pkg.op);
-		printk(KERN_INFO DRV_NAME": %s() pkg.wr_val = %d\n", __func__, pkg.wr_val);
-
-
-		return len;
+	if(len != 3 && len != 2){
+		return -EINVAL;
 	}
-	*/
+
+	if(copy_from_user(pkg,	buf, len) != 0){
+		return -EFAULT;
+	}
+
+
+	gpio_no = pkg[0];
+	op = pkg[1];
+	printk(KERN_INFO DRV_NAME": %s() gpio_num = %d\n", __func__, gpio_no);
+	printk(KERN_INFO DRV_NAME": %s() op = %c\n", __func__, op);
+
+	if(op == 'w' && len == 3){
+		wr_val = pkg[2];
+		printk(KERN_INFO DRV_NAME": %s() wr_val = %d\n", __func__, wr_val);
+
+		gpio__steer_pinmux(gpio_no, GPIO__OUT);
+
+		if(wr_val){
+			gpio__set(gpio_no);
+		}else{
+			gpio__clear(gpio_no);
+		}
+
+	}else if(op == 'r' && len == 2){
+
+		gpio__steer_pinmux(gpio_no, GPIO__IN);
+
+		//TODO rd_val gpio__read
+
+
+		printk(KERN_INFO DRV_NAME": %s() rd_val = %d\n", __func__, rd_val);
+	}else{
+		return -EINVAL;
+	}
+
+
 	return len;
 }
 
@@ -65,6 +91,11 @@ static ssize_t gpio_stream_read(
 	size_t len,
 	loff_t* f_pos
 ) {
+
+	if(len != 1){
+		return -EINVAL;
+	}
+
 	if(copy_to_user(buf, &rd_val, len) != 0){
 		return -EFAULT;
 	}else{
